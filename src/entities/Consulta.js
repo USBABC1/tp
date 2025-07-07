@@ -10,7 +10,7 @@ class ConsultaAPI {
       const stored = localStorage.getItem(this.storageKey);
       return stored ? JSON.parse(stored) : [];
     } catch (error) {
-      console.error('Erro ao carregar consultas do localStorage:', error);
+      console.error('Erro ao carregar dados do localStorage:', error);
       return [];
     }
   }
@@ -19,7 +19,7 @@ class ConsultaAPI {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(this.data));
     } catch (error) {
-      console.error('Erro ao salvar consultas no localStorage:', error);
+      console.error('Erro ao salvar dados no localStorage:', error);
     }
   }
 

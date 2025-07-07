@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Consulta } from "../entities/Consulta";
-import { Paciente } from "../entities/Paciente";
+import { Paciente } from "../entities/Paciente.js";
+import { Consulta } from "../entities/Consulta.js";
 import { Link } from "react-router-dom";
-import { createPageUrl } from "../lib/utils";
-import { Calendar, User, Weight, Search, Plus } from "lucide-react";
+import { createPageUrl } from "../lib/utils.js";
+import { Plus, Search, Calendar, User, Eye, Edit } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -23,7 +23,6 @@ export default function Consultas() {
         Consulta.list("-data_atendimento"),
         Paciente.list()
       ]);
-      
       setConsultas(consultasData);
       setPacientes(pacientesData);
     } catch (error) {
@@ -39,8 +38,8 @@ export default function Consultas() {
   };
 
   const filteredConsultas = consultas.filter(consulta => {
-    const pacienteNome = getPacienteNome(consulta.paciente_id);
-    return pacienteNome.toLowerCase().includes(searchTerm.toLowerCase());
+    const pacienteNome = getPacienteNome(consulta.paciente_id).toLowerCase();
+    return pacienteNome.includes(searchTerm.toLowerCase());
   });
 
   if (isLoading) {
@@ -65,7 +64,7 @@ export default function Consultas() {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="glass-card rounded-2xl p-6">
             <div className="flex items-center justify-between">
@@ -83,10 +82,10 @@ export default function Consultas() {
                 <p className="text-emerald-100 text-sm mb-1">Este Mês</p>
                 <p className="text-2xl font-bold text-white">
                   {consultas.filter(c => {
-                    const created = new Date(c.data_atendimento);
+                    const consulta = new Date(c.data_atendimento);
                     const now = new Date();
-                    return created.getMonth() === now.getMonth() && 
-                           created.getFullYear() === now.getFullYear();
+                    return consulta.getMonth() === now.getMonth() && 
+                           consulta.getFullYear() === now.getFullYear();
                   }).length}
                 </p>
               </div>
@@ -153,25 +152,43 @@ export default function Consultas() {
                         </span>
                       </div>
                       
-                      <div className="flex items-center space-x-2 text-emerald-100">
-                        <Weight className="w-4 h-4" />
-                        <span>{consulta.peso} kg</span>
-                      </div>
-                      
-                      {consulta.observacoes && (
-                        <div className="flex items-center space-x-2 text-white/60">
-                          <span className="truncate">{consulta.observacoes}</span>
+                      {consulta.peso && (
+                        <div className="flex items-center space-x-2 text-emerald-100">
+                          <span className="w-4 h-4 text-center">⚖️</span>
+                          <span>{consulta.peso} kg</span>
                         </div>
                       )}
+                      
+                      <div className="flex items-center space-x-2 text-white/60">
+                        <span className="w-4 h-4 text-center">🕒</span>
+                        <span>
+                          Registrado em {format(new Date(consulta.created_date), "dd/MM/yyyy", { locale: ptBR })}
+                        </span>
+                      </div>
                     </div>
+                    
+                    {consulta.observacoes && (
+                      <div className="mt-3">
+                        <p className="text-emerald-200 text-sm font-medium">Observações:</p>
+                        <p className="text-white/80 text-sm">{consulta.observacoes}</p>
+                      </div>
+                    )}
+                    
+                    {consulta.procedimentos && (
+                      <div className="mt-2">
+                        <p className="text-emerald-200 text-sm font-medium">Procedimentos:</p>
+                        <p className="text-white/80 text-sm">{consulta.procedimentos}</p>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex flex-col space-y-2">
                     <Link
                       to={createPageUrl(`VisualizarFicha?id=${consulta.paciente_id}`)}
-                      className="glass-button px-4 py-2 rounded-lg text-white font-medium hover:bg-emerald-500/30 transition-all text-center"
+                      className="glass-button px-4 py-2 rounded-lg text-white font-medium hover:bg-emerald-500/30 transition-all text-center flex items-center space-x-2"
                     >
-                      Ver Ficha
+                      <Eye className="w-4 h-4" />
+                      <span>Ver Ficha</span>
                     </Link>
                   </div>
                 </div>

@@ -10,32 +10,32 @@ export default function CampoSimNao({
 }) {
   return (
     <div className="space-y-3">
-      <label className="text-white font-medium text-sm block">
-        {label}
-      </label>
-      
-      <div className="flex items-center space-x-4">
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <input
-            type="radio"
-            name={`radio-${label}`}
-            checked={value === true}
-            onChange={() => onChange(true)}
-            className="w-4 h-4 text-emerald-600 bg-white/20 border-white/30 focus:ring-emerald-500"
-          />
-          <span className="text-white text-sm">Sim</span>
+      <div>
+        <label className="text-white font-medium text-sm mb-3 block">
+          {label}
         </label>
-        
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <input
-            type="radio"
-            name={`radio-${label}`}
-            checked={value === false}
-            onChange={() => onChange(false)}
-            className="w-4 h-4 text-emerald-600 bg-white/20 border-white/30 focus:ring-emerald-500"
-          />
-          <span className="text-white text-sm">Não</span>
-        </label>
+        <div className="flex space-x-4">
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="radio"
+              name={`radio-${label}`}
+              checked={value === true}
+              onChange={() => onChange(true)}
+              className="w-4 h-4 text-emerald-600 bg-white/20 border-white/30 focus:ring-emerald-500"
+            />
+            <span className="text-white">Sim</span>
+          </label>
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="radio"
+              name={`radio-${label}`}
+              checked={value === false}
+              onChange={() => onChange(false)}
+              className="w-4 h-4 text-emerald-600 bg-white/20 border-white/30 focus:ring-emerald-500"
+            />
+            <span className="text-white">Não</span>
+          </label>
+        </div>
       </div>
       
       {textField && value === true && (
