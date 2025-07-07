@@ -1,3 +1,64 @@
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { Paciente } from "../entities/Paciente.js";
+import { Consulta } from "../entities/Consulta.js";
+import { createPageUrl } from "../lib/utils.js";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { 
+  ArrowLeft, 
+  Edit, 
+  Download, 
+  User, 
+  Phone, 
+  MapPin, 
+  Calendar,
+  Heart,
+  Stethoscope,
+  Smile,
+  FileText,
+  Plus
+} from "lucide-react";
+import jsPDF from "jspdf";
+
+export default function VisualizarFicha() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const pacienteId = searchParams.get("id");
+  
+  const [paciente, setPaciente] = useState(null);
+  const [consultas, setConsultas] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+
+  useEffect(() => {
+    if (pacienteId) {
+      loadData();
+    }
+  }, [pacienteId]);
+
+  const loadData = async () => {
+    try {
+      const [pacienteData, consultasData] = await Promise.all([
+        Paciente.getById(pacienteId),
+        Consulta.getByPacienteId(pacienteId)
+      ]);
+      
+      setPaciente(pacienteData);
+      setConsultas(consultasData);
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatarSimNao = (valor) => {
+    if (valor === true) return "Sim";
+    if (valor === false) return "Não";
+    return "Não informado";
+  };
+
 const handleExportPDF = async () => {
      setIsExporting(true);
      try {
@@ -255,4 +316,272 @@ const handleExportPDF = async () => {
     }
   };
 
-export default handleExportPDF
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white">Carregando ficha...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!paciente) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="glass-card rounded-2xl p-12 text-center">
+          <FileText className="w-16 h-16 text-white/40 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-white mb-2">Paciente não encontrado</h3>
+          <p className="text-white/70 mb-6">O paciente solicitado não foi encontrado.</p>
+          <Link
+            to={createPageUrl("Dashboard")}
+            className="glass-button px-6 py-3 rounded-lg text-white font-medium hover:bg-emerald-500/30 transition-all inline-flex items-center space-x-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Voltar ao Dashboard</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div className="flex items-center space-x-4">
+            <Link
+              to={createPageUrl("Dashboard")}
+              className="glass-button p-2 rounded-lg text-white hover:bg-white/20 transition-all"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-white">{paciente.nome_crianca}</h1>
+              <p className="text-emerald-100">Ficha de Anamnese</p>
+            </div>
+          </div>
+          
+          <div className="flex space-x-3">
+            <button
+              onClick={handleExportPDF}
+              disabled={isExporting}
+              className="glass-button px-4 py-2 rounded-lg text-white font-medium hover:bg-emerald-500/30 transition-all flex items-center space-x-2"
+            >
+              {isExporting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <span>Exportando...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  <span>Exportar PDF</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Dados Pessoais */}
+        <div className="glass-card rounded-2xl p-6 mb-6">
+          <div className="flex items-center space-x-2 mb-6">
+            <User className="w-6 h-6 text-emerald-300" />
+            <h2 className="text-xl font-semibold text-white">Dados Pessoais</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <p className="text-emerald-200 text-sm font-medium">Nome</p>
+                <p className="text-white">{paciente.nome_crianca}</p>
+              </div>
+              
+              {paciente.data_nascimento && (
+                <div>
+                  <p className="text-emerald-200 text-sm font-medium">Data de Nascimento</p>
+                  <p className="text-white">
+                    {format(new Date(paciente.data_nascimento), "dd/MM/yyyy", { locale: ptBR })}
+                  </p>
+                </div>
+              )}
+              
+              {paciente.idade && (
+                <div>
+                  <p className="text-emerald-200 text-sm font-medium">Idade</p>
+                  <p className="text-white">{paciente.idade} anos</p>
+                </div>
+              )}
+              
+              {paciente.cel && (
+                <div>
+                  <p className="text-emerald-200 text-sm font-medium">Celular</p>
+                  <p className="text-white flex items-center space-x-2">
+                    <Phone className="w-4 h-4" />
+                    <span>{paciente.cel}</span>
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            <div className="space-y-4">
+              {paciente.endereco && (
+                <div>
+                  <p className="text-emerald-200 text-sm font-medium">Endereço</p>
+                  <p className="text-white flex items-start space-x-2">
+                    <MapPin className="w-4 h-4 mt-1" />
+                    <span>
+                      {paciente.endereco}
+                      {paciente.bairro && `, ${paciente.bairro}`}
+                      {paciente.cidade && `, ${paciente.cidade}`}
+                      {paciente.cep && ` - ${paciente.cep}`}
+                    </span>
+                  </p>
+                </div>
+              )}
+              
+              {paciente.responsavel_nome && (
+                <div>
+                  <p className="text-emerald-200 text-sm font-medium">Responsável</p>
+                  <p className="text-white">{paciente.responsavel_nome}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Dados dos Pais */}
+        {(paciente.nome_mae || paciente.nome_pai) && (
+          <div className="glass-card rounded-2xl p-6 mb-6">
+            <div className="flex items-center space-x-2 mb-6">
+              <Heart className="w-6 h-6 text-emerald-300" />
+              <h2 className="text-xl font-semibold text-white">Dados dos Pais</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {paciente.nome_mae && (
+                <div className="space-y-3">
+                  <h3 className="text-emerald-200 font-medium">Mãe</h3>
+                  <div className="space-y-2">
+                    <p className="text-white">{paciente.nome_mae}</p>
+                    {paciente.idade_mae && (
+                      <p className="text-white/80 text-sm">{paciente.idade_mae} anos</p>
+                    )}
+                    {paciente.profissao_mae && (
+                      <p className="text-white/80 text-sm">{paciente.profissao_mae}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {paciente.nome_pai && (
+                <div className="space-y-3">
+                  <h3 className="text-emerald-200 font-medium">Pai</h3>
+                  <div className="space-y-2">
+                    <p className="text-white">{paciente.nome_pai}</p>
+                    {paciente.idade_pai && (
+                      <p className="text-white/80 text-sm">{paciente.idade_pai} anos</p>
+                    )}
+                    {paciente.profissao_pai && (
+                      <p className="text-white/80 text-sm">{paciente.profissao_pai}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Motivo da Consulta */}
+        {paciente.motivo_consulta && (
+          <div className="glass-card rounded-2xl p-6 mb-6">
+            <div className="flex items-center space-x-2 mb-6">
+              <Stethoscope className="w-6 h-6 text-emerald-300" />
+              <h2 className="text-xl font-semibold text-white">Motivo da Consulta</h2>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <p className="text-emerald-200 text-sm font-medium mb-2">Motivo</p>
+                <p className="text-white">{paciente.motivo_consulta}</p>
+              </div>
+              
+              {paciente.alteracao_gestacao && (
+                <div>
+                  <p className="text-emerald-200 text-sm font-medium mb-2">Alterações na Gestação</p>
+                  <p className="text-white">{paciente.alteracao_gestacao}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Mapa Dental */}
+        {paciente.mapa_dental && paciente.mapa_dental.length > 0 && (
+          <div className="glass-card rounded-2xl p-6 mb-6">
+            <div className="flex items-center space-x-2 mb-6">
+              <Smile className="w-6 h-6 text-emerald-300" />
+              <h2 className="text-xl font-semibold text-white">Mapa Dental</h2>
+            </div>
+            
+            <div>
+              <p className="text-emerald-200 text-sm font-medium mb-2">Dentes com Problemas</p>
+              <p className="text-white">{paciente.mapa_dental.join(", ")}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Histórico de Consultas */}
+        <div className="glass-card rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-2">
+              <Calendar className="w-6 h-6 text-emerald-300" />
+              <h2 className="text-xl font-semibold text-white">Histórico de Consultas</h2>
+            </div>
+          </div>
+          
+          {consultas.length === 0 ? (
+            <div className="text-center py-8">
+              <Calendar className="w-12 h-12 text-white/40 mx-auto mb-4" />
+              <p className="text-white/70">Nenhuma consulta registrada</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {consultas.map((consulta) => (
+                <div key={consulta.id} className="glass-card rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-4 h-4 text-emerald-300" />
+                      <span className="text-white font-medium">
+                        {format(new Date(consulta.data_atendimento), "dd/MM/yyyy", { locale: ptBR })}
+                      </span>
+                    </div>
+                    {consulta.peso && (
+                      <span className="text-emerald-200 text-sm">Peso: {consulta.peso}kg</span>
+                    )}
+                  </div>
+                  
+                  {consulta.observacoes && (
+                    <div className="mb-3">
+                      <p className="text-emerald-200 text-sm font-medium mb-1">Observações</p>
+                      <p className="text-white/80 text-sm">{consulta.observacoes}</p>
+                    </div>
+                  )}
+                  
+                  {consulta.procedimentos && (
+                    <div>
+                      <p className="text-emerald-200 text-sm font-medium mb-1">Procedimentos</p>
+                      <p className="text-white/80 text-sm">{consulta.procedimentos}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
