@@ -15,3 +15,5 @@
 +import CampoSimNao from "../components/CampoSimNao.jsx";
 +import MapaDental from "../components/MapaDental.jsx";
 +import HistoricoConsultas from "../components/HistoricoConsultas.jsx";
+
+export default HistoricoConsultas
