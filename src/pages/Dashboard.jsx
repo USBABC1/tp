@@ -6,3 +6,5 @@
 -import { createPageUrl } from "../lib/utils";
 +import { createPageUrl } from "../lib/utils.js";
  import { Plus, Search, FileText, Calendar, User, Phone } from "lucide-react";
+
+export default React

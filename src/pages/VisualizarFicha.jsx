@@ -254,3 +254,5 @@ const handleExportPDF = async () => {
       setIsExporting(false);
     }
   };
+
+export default handleExportPDF
