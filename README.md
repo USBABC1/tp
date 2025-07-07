@@ -1,10 +1,8 @@
 # Tio Paulo - Sistema de Ficha de Anamnese
 
-## Descrição do Projeto
-
 Sistema web desenvolvido em React para gerenciamento de fichas de anamnese odontológica infantil. O sistema permite criar, visualizar e exportar fichas completas de pacientes, incluindo dados pessoais, histórico médico, higiene bucal, mapa dental e histórico de consultas.
 
-## Funcionalidades
+## 🚀 Funcionalidades
 
 - ✅ **Dashboard**: Visualização geral dos pacientes cadastrados
 - ✅ **Nova Ficha**: Formulário completo para cadastro de novos pacientes
@@ -14,8 +12,9 @@ Sistema web desenvolvido em React para gerenciamento de fichas de anamnese odont
 - ✅ **Histórico de Consultas**: Registro de atendimentos
 - ✅ **Busca e Filtros**: Sistema de busca por pacientes
 - ✅ **Design Responsivo**: Interface adaptável para desktop e mobile
+- ✅ **Integração Supabase**: Banco de dados em nuvem
 
-## Tecnologias Utilizadas
+## 🛠️ Tecnologias Utilizadas
 
 - **React 19.1.0** - Framework principal
 - **React Router DOM** - Roteamento
@@ -24,9 +23,10 @@ Sistema web desenvolvido em React para gerenciamento de fichas de anamnese odont
 - **jsPDF** - Geração de PDF
 - **html2canvas** - Captura de tela para PDF
 - **date-fns** - Manipulação de datas
+- **Supabase** - Banco de dados e autenticação
 - **Vite** - Build tool
 
-## Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
 tio-paulo-app/
@@ -44,7 +44,8 @@ tio-paulo-app/
 │   │   ├── Consulta.js
 │   │   └── Paciente.js
 │   ├── lib/
-│   │   └── utils.js
+│   │   ├── utils.js
+│   │   └── supabase.js
 │   ├── pages/
 │   │   ├── Consultas.jsx
 │   │   ├── Dashboard.jsx
@@ -54,141 +55,117 @@ tio-paulo-app/
 │   ├── App.jsx
 │   ├── index.css
 │   └── main.jsx
+├── supabase/
+│   └── migrations/
+│       └── create_tables.sql
+├── .env.example
 ├── index.html
 ├── package.json
-├── pnpm-lock.yaml
 └── vite.config.js
 ```
 
-## Instalação e Configuração
+## ⚙️ Instalação e Configuração
 
 ### Pré-requisitos
 
-- Node.js 18+ 
-- pnpm (recomendado) ou npm
+- Node.js 18+
+- npm ou pnpm
+- Conta no Supabase
 
 ### Passos para Instalação
 
-1. **Extrair o projeto**
+1. **Clone o repositório**
    ```bash
-   unzip tio-paulo-app.zip
+   git clone <repository-url>
    cd tio-paulo-app
    ```
 
 2. **Instalar dependências**
    ```bash
-   pnpm install
-   # ou
    npm install
-   ```
-
-3. **Executar em desenvolvimento**
-   ```bash
-   pnpm run dev
    # ou
-   npm run dev
+   pnpm install
    ```
 
-4. **Acessar o sistema**
+3. **Configurar Supabase**
+   - Crie uma conta em [supabase.com](https://supabase.com)
+   - Crie um novo projeto
+   - Copie `.env.example` para `.env`
+   - Configure as variáveis de ambiente:
+   ```env
+   VITE_SUPABASE_URL=https://your-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-anon-key-here
+   ```
+
+4. **Executar migrações do banco**
+   - No painel do Supabase, vá para SQL Editor
+   - Execute o conteúdo do arquivo `supabase/migrations/create_tables.sql`
+
+5. **Executar em desenvolvimento**
+   ```bash
+   npm run dev
+   # ou
+   pnpm run dev
+   ```
+
+6. **Acessar o sistema**
    - Abra o navegador em: `http://localhost:5173`
 
-## Banco de Dados
-
-### Armazenamento Local
-
-O sistema utiliza **localStorage** do navegador para persistência de dados. Não requer configuração de banco de dados externo.
+## 🗄️ Banco de Dados
 
 ### Estrutura de Dados
 
-#### Entidade Paciente
-```javascript
-{
-  id: string,
-  nome_crianca: string,
-  data_nascimento: string,
-  idade: number,
-  endereco: string,
-  bairro: string,
-  cep: string,
-  cidade: string,
-  cel: string,
-  nome_mae: string,
-  idade_mae: number,
-  profissao_mae: string,
-  nome_pai: string,
-  idade_pai: number,
-  profissao_pai: string,
-  motivo_consulta: string,
-  alteracao_gestacao: string,
-  // ... outros campos da anamnese
-  mapa_dental: number[],
-  responsavel_nome: string,
-  informacoes_verdadeiras: boolean,
-  created_date: string,
-  updated_date: string
-}
-```
+#### Tabela Pacientes
+- Dados pessoais (nome, idade, endereço, etc.)
+- Dados dos pais
+- Histórico médico completo
+- Necessidades especiais
+- Higiene bucal
+- Mapa dental
+- Hábitos alimentares
 
-#### Entidade Consulta
-```javascript
-{
-  id: string,
-  paciente_id: string,
-  data_atendimento: string,
-  peso: number,
-  observacoes: string,
-  procedimentos: string,
-  created_date: string,
-  updated_date: string
-}
-```
+#### Tabela Consultas
+- Data do atendimento
+- Peso do paciente
+- Observações
+- Procedimentos realizados
 
-### Chaves do localStorage
+### Chaves de Armazenamento Local (Fallback)
 
 - `tio_paulo_pacientes` - Array de pacientes
 - `tio_paulo_consultas` - Array de consultas
 
-## Deploy em Produção
+## 🚀 Deploy
 
-### Opção 1: Build Local + Hospedagem Estática
+### Opção 1: Netlify (Recomendado)
 
-1. **Gerar build de produção**
+1. **Build do projeto**
    ```bash
-   pnpm run build
-   # ou
    npm run build
    ```
 
-2. **Deploy da pasta `dist/`**
-   - Hospedar a pasta `dist/` em qualquer servidor web estático
-   - Exemplos: Netlify, Vercel, GitHub Pages, Apache, Nginx
-
-### Opção 2: Netlify (Recomendado)
-
-1. **Fazer upload do projeto**
+2. **Deploy no Netlify**
    - Acesse [netlify.com](https://netlify.com)
-   - Arraste a pasta do projeto ou conecte repositório Git
+   - Arraste a pasta `dist/` ou conecte repositório Git
+   - Configure as variáveis de ambiente no painel do Netlify
 
-2. **Configurações de build**
-   ```
-   Build command: pnpm run build
-   Publish directory: dist
-   ```
-
-### Opção 3: Vercel
+### Opção 2: Vercel
 
 1. **Deploy via CLI**
    ```bash
    npx vercel
    ```
 
-2. **Ou via interface web**
-   - Acesse [vercel.com](https://vercel.com)
-   - Importe o projeto
+2. **Configure as variáveis de ambiente no painel do Vercel**
 
-### Opção 4: Servidor Próprio
+### Opção 3: Servidor Próprio
 
-1. **Configurar servidor web**
+1. **Build do projeto**
+   ```bash
+   npm run build
+   ```
+
+2. **Configurar servidor web (Nginx)**
    ```nginx
    server {
        listen 80;
@@ -202,28 +179,14 @@ O sistema utiliza **localStorage** do navegador para persistência de dados. Nã
    }
    ```
 
-## Configurações Importantes
-
-### Variáveis de Ambiente
-
-Não são necessárias variáveis de ambiente para funcionamento básico.
-
-### Configuração de Rota
-
-Para SPAs (Single Page Applications), configure o servidor para redirecionar todas as rotas para `index.html`.
-
-### HTTPS
-
-Recomendado para produção, especialmente para funcionalidades de localStorage.
-
-## Funcionalidades Detalhadas
+## 📄 Funcionalidades Detalhadas
 
 ### Exportação de PDF
 
-- **Tecnologia**: jsPDF + html2canvas
-- **Recursos**: Logo automático, formatação profissional, múltiplas páginas
-- **Qualidade**: Alta resolução (scale: 2)
-- **Formato**: A4 otimizado
+- **Tecnologia**: jsPDF
+- **Recursos**: Formatação profissional, múltiplas páginas
+- **Qualidade**: Otimizado para impressão
+- **Formato**: A4 com quebras de página automáticas
 
 ### Mapa Dental
 
@@ -238,12 +201,12 @@ Recomendado para produção, especialmente para funcionalidades de localStorage.
 - **Breakpoints**: Tailwind CSS padrão
 - **Touch**: Suporte completo a touch events
 
-## Manutenção e Suporte
+## 🔧 Manutenção e Suporte
 
 ### Backup de Dados
 
 ```javascript
-// Exportar dados
+// Exportar dados do localStorage (fallback)
 const pacientes = localStorage.getItem('tio_paulo_pacientes');
 const consultas = localStorage.getItem('tio_paulo_consultas');
 
@@ -252,63 +215,58 @@ localStorage.setItem('tio_paulo_pacientes', dadosBackup.pacientes);
 localStorage.setItem('tio_paulo_consultas', dadosBackup.consultas);
 ```
 
-### Limpeza de Dados
-
-```javascript
-// Limpar todos os dados
-localStorage.removeItem('tio_paulo_pacientes');
-localStorage.removeItem('tio_paulo_consultas');
-```
-
 ### Logs e Debug
 
 - Console do navegador para debug
 - React DevTools para desenvolvimento
 - Network tab para análise de performance
+- Supabase Dashboard para monitoramento do banco
 
-## Segurança
+## 🔒 Segurança
 
-### Dados Locais
+### Dados em Nuvem
 
-- Dados armazenados apenas no navegador do usuário
-- Não há transmissão de dados sensíveis
-- Recomendado backup regular dos dados
+- Dados armazenados no Supabase (PostgreSQL)
+- Row Level Security (RLS) habilitado
+- Autenticação via Supabase Auth
+- HTTPS obrigatório em produção
 
 ### Validação
 
 - Validação client-side nos formulários
 - Campos obrigatórios marcados
 - Sanitização básica de inputs
+- Políticas de segurança no banco
 
-## Performance
+## ⚡ Performance
 
 ### Otimizações Implementadas
 
 - **Lazy Loading**: Componentes carregados sob demanda
-- **Memoização**: React.memo em componentes pesados
-- **Bundle Splitting**: Vite otimização automática
+- **Code Splitting**: Vite otimização automática
 - **CSS Purging**: Tailwind CSS tree-shaking
+- **Bundle Optimization**: Chunks separados por funcionalidade
 
 ### Métricas Esperadas
 
 - **First Contentful Paint**: < 1.5s
 - **Largest Contentful Paint**: < 2.5s
 - **Time to Interactive**: < 3s
-- **Bundle Size**: ~500KB gzipped
+- **Bundle Size**: ~600KB gzipped
 
-## Troubleshooting
+## 🐛 Troubleshooting
 
 ### Problemas Comuns
 
 1. **PDF não gera**
-   - Verificar se html2canvas carregou
+   - Verificar se jsPDF carregou
    - Checar console para erros
    - Testar em navegador diferente
 
 2. **Dados não salvam**
-   - Verificar se localStorage está habilitado
-   - Checar quota de armazenamento
-   - Limpar cache do navegador
+   - Verificar conexão com Supabase
+   - Checar variáveis de ambiente
+   - Verificar políticas RLS
 
 3. **Layout quebrado**
    - Verificar se Tailwind CSS carregou
@@ -318,25 +276,24 @@ localStorage.removeItem('tio_paulo_consultas');
 ### Logs Úteis
 
 ```javascript
-// Verificar dados salvos
+// Verificar conexão Supabase
+console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+
+// Verificar dados locais (fallback)
 console.log('Pacientes:', localStorage.getItem('tio_paulo_pacientes'));
 console.log('Consultas:', localStorage.getItem('tio_paulo_consultas'));
-
-// Verificar quota localStorage
-console.log('Quota:', navigator.storage?.estimate());
 ```
 
-## Contato e Suporte
+## 📞 Contato e Suporte
 
 Para dúvidas técnicas ou suporte:
 
 - Documentação: Este arquivo
-- Issues: Reportar problemas via GitHub (se aplicável)
-- Email: [seu-email@dominio.com]
+- Issues: Reportar problemas via GitHub
+- Email: suporte@tiopaulo.com
 
 ---
 
-**Versão**: 1.0.0  
+**Versão**: 2.0.0  
 **Última atualização**: Janeiro 2025  
 **Desenvolvido por**: Manus AI
-
