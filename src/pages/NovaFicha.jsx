@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Paciente } from "../entities/Paciente.js";
-import { Consulta } from "../entities/Consulta.js";
+import { Paciente } from "../entities/Paciente";
+import { Consulta } from "../entities/Consulta";
 import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "../lib/utils.js";
+import { createPageUrl } from "../lib/utils";
 import { Save, FileText, User, Heart, Stethoscope, Smile, Activity, Baby, SmilePlus, Apple, Edit3 } from "lucide-react";
 
 import CampoSimNao from "../components/CampoSimNao.jsx";

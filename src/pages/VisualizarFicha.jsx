@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
-import { Paciente } from "../entities/Paciente.js";
-import { Consulta } from "../entities/Consulta.js";
-import { createPageUrl } from "../lib/utils.js";
+import { Paciente } from "../entities/Paciente";
+import { Consulta } from "../entities/Consulta";
+import { createPageUrl } from "../lib/utils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { 

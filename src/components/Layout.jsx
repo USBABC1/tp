@@ -1,8 +1,6 @@
-@@ .. @@
- import { Link, useLocation } from "react-router-dom";
--import { createPageUrl } from "../lib/utils";
-+import { createPageUrl } from "../lib/utils.js";
- import { FileText, Users, Calendar, Settings } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { createPageUrl } from "../lib/utils";
+import { FileText, Users, Calendar, Settings } from "lucide-react";
 
 export default function Layout({ children }) {
   const location = useLocation();

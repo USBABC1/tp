@@ -6,6 +6,10 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        background: '#111827',
+        foreground: '#F9FAFB',
+      },
       animation: {
         'float': 'float 6s ease-in-out infinite',
         'pulse-slow': 'pulse 3s ease-in-out infinite',

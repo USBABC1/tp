@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Paciente } from "../entities/Paciente.js";
-import { Consulta } from "../entities/Consulta.js";
+import { Paciente } from "../entities/Paciente";
+import { Consulta } from "../entities/Consulta";
 import { Link } from "react-router-dom";
-import { createPageUrl } from "../lib/utils.js";
+import { createPageUrl } from "../lib/utils";
 import { Plus, Search, Calendar, User, Eye, Edit } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
