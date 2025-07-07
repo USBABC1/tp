@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "@supabase/supabase-js": "^2.50.3"
-  }
+    "@supabase/supabase-js": "^2.50.3",
     "react-router-dom": "^6.28.1",
-    "@supabase/supabase-js": "^2.39.0",
     "lucide-react": "^0.263.1",
     "date-fns": "^2.30.0",
     "jspdf": "^2.5.1",
     "html2canvas": "^1.4.1"
+  }
+}
